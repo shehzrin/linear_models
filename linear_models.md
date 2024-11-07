@@ -130,3 +130,62 @@ fit |>
 | Borough: Brooklyn |  -49.754 |   0.000 |
 | Borough: Queens   |  -77.048 |   0.000 |
 | Borough: Bronx    |  -90.254 |   0.000 |
+
+## Some diagnostics
+
+(backtrack to some EDA)
+
+``` r
+nyc_airbnb |>
+  ggplot(aes(x = stars, y = price)) + 
+  geom_point() + 
+  stat_smooth(method = "lm")
+```
+
+    ## `geom_smooth()` using formula = 'y ~ x'
+
+<img src="linear_models_files/figure-gfm/unnamed-chunk-6-1.png" width="90%" />
+
+Most diagnostics use residuals. Now have normal dataframe and the
+nyc_airbnb can be any data (model can be used on any data)
+
+``` r
+modelr::add_residuals(nyc_airbnb, fit) |>
+  ggplot(aes(x = resid)) +
+  geom_histogram()
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+<img src="linear_models_files/figure-gfm/unnamed-chunk-7-1.png" width="90%" />
+
+``` r
+modelr::add_residuals(nyc_airbnb, fit) |>
+  ggplot(aes(x =  borough, y = resid)) +
+  geom_violin() +
+  ylim(-200, 500)
+```
+
+<img src="linear_models_files/figure-gfm/unnamed-chunk-8-1.png" width="90%" />
+
+residuals against stars
+
+``` r
+modelr::add_residuals(nyc_airbnb, fit) |>
+  ggplot(aes(x =  stars, y = resid)) +
+  geom_point()
+```
+
+<img src="linear_models_files/figure-gfm/unnamed-chunk-9-1.png" width="90%" />
+
+Residuals against fitted values
+
+``` r
+nyc_airbnb |>  
+  modelr::add_residuals(fit) |>
+  modelr::add_predictions(fit) |>
+  ggplot(aes(x = pred, y = resid)) +
+  geom_point()
+```
+
+<img src="linear_models_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />
